@@ -1,0 +1,80 @@
+﻿@using SupermarketManagement.Domain.Models
+@using SupermarketManagement.Application.UseCases.Categories
+
+@page "/editcategory/{categoryId}"
+
+@inject NavigationManager NavigationManager
+@inject AddCategoryUseCase AddCategoryUseCase
+@inject GetCategoryByIdUseCase GetCategoryByIdUseCase
+@inject EditCategoryUseCase EditCategoryUseCase
+
+<h3>Edit category</h3>
+<br />
+@if (_category != null)
+{
+    <EditForm Model="_category" OnValidSubmit="OnValidSumit">
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="_category.Name" class="form-control"></InputText>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @_errorMessage
+            </div>
+        }
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <InputText id="description" @bind-Value="_category.Description" class="form-control"></InputText>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" @onclick="OnCancelClick">Cancel</button>
+    </EditForm>
+
+}
+
+@code {
+    [Parameter]
+    public string CategoryId { get; set; } = string.Empty;
+
+    private Category _category = new() { Id = Guid.Empty, Name = string.Empty };
+    private string _errorMessage = string.Empty;
+
+    protected override void OnInitialized() =>
+        base.OnInitialized();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Guid.TryParse(CategoryId, out Guid id))
+        {
+            Category? category = GetCategoryByIdUseCase.Execute(id);
+            if (category == null)
+            {
+                _errorMessage = "There is no such category.";
+                return;
+            }
+
+            _category = new() { Id = category.Id, Name = category.Name, Description = category.Description };
+        }
+    }
+
+    private void OnValidSumit()
+    {
+        if (string.IsNullOrWhiteSpace(_category.Name))
+        {
+            _errorMessage = "Name cannot be empty.";
+            return;
+        }
+
+        EditCategoryUseCase.Execute(_category);
+        NavigationManager.NavigateTo("/categories");
+    }
+
+    private void OnCancelClick() =>
+        NavigationManager.NavigateTo("/categories");
+}

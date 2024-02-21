@@ -1,0 +1,63 @@
+﻿@page "/categories"
+
+@using SupermarketManagement.Domain.Models
+@using SupermarketManagement.Application.UseCases.Categories
+
+@inject NavigationManager NavigationManager
+@inject ViewCategoriesUseCase ViewCategoryUseCase
+@inject DeleteCategoryUseCase DeleteCategoryUseCase
+
+<h3>Manage categories</h3>
+<br />
+@if (_categories != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Category category in _categories)
+            {
+                <tr>
+                    <th>@category.Name</th>
+                    <th>@category.Description</th>
+                    <td>
+                        <button type="button" @onclick="@(() => OnEditCategoryClick(category))" class="btn btn-link">Edit</button>
+                        <button type="button" @onclick="@(() => OnDeleteCategoryClick(category.Id))" class="btn btn-link">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<br />
+<button type="button" @onclick="OnAddCategoryClick" class="btn btn-primary">Add Category</button>
+
+@code {
+    private List<Category> _categories = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        LoadCategories();
+    }
+
+    private void OnAddCategoryClick() =>
+        NavigationManager.NavigateTo("/addcategory");
+
+    private void OnEditCategoryClick(Category category) =>
+        NavigationManager.NavigateTo($"/editcategory/{category.Id}");
+
+    private void OnDeleteCategoryClick(Guid id)
+    {
+        DeleteCategoryUseCase.Execute(id);
+        LoadCategories();
+    }
+
+    private void LoadCategories() =>
+        _categories = ViewCategoryUseCase.Execute().ToList();
+}

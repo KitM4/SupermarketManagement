@@ -1,0 +1,65 @@
+﻿@page "/products"
+
+@using SupermarketManagement.Domain.Models
+@using SupermarketManagement.Application.UseCases.Products
+@using SupermarketManagement.Application.UseCases.Categories
+
+@inject NavigationManager NavigationManager
+@inject ViewProductsUseCase ViewProductsUseCase
+@inject GetCategoryByIdUseCase GetCategoryByIdUseCase
+@inject DeleteProductUseCase DeleteProductUseCase
+
+<h3>Products</h3>
+<br />
+@if (_products != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Category</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Product product in _products)
+            {
+                <tr>
+                    <td>@GetCategoryByIdUseCase.Execute(product.CategoryId)?.Name</td>
+                    <td>@product.Name</td>
+                    <td>@(Math.Round(product.Price, 2))</td>
+                    <td>@product.Quantity</td>
+                    <td>
+                        <button type="button" class="btn btn-link" @onclick="@(()=>OnEditProductClick(product))">Edit</button>
+                        &nbsp;
+                        <button type="button" class="btn btn-link" @onclick="@(()=>OnDeleteProductClick(product.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<br />
+<button type="button" @onclick="OnAddProductClick" class="btn btn-primary">Add Product</button>
+
+@code {
+
+    private IEnumerable<Product> _products = Array.Empty<Product>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _products = ViewProductsUseCase.Execute();
+    }
+
+    private void OnAddProductClick() =>
+        NavigationManager.NavigateTo("/addproduct");
+
+    private void OnEditProductClick(Product product) =>
+        NavigationManager.NavigateTo($"/editproduct/{product.Id}");
+
+    private void OnDeleteProductClick(Guid id) =>
+        DeleteProductUseCase.Execute(id);
+}
