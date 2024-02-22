@@ -21,7 +21,7 @@ builder.Services.AddTransient<DeleteCategoryUseCase>();
 builder.Services.AddTransient<GetCategoryByIdUseCase>();
 
 builder.Services.AddTransient<AddProductUseCase>();
-//builder.Services.AddTransient<SellProductUseCase>();
+builder.Services.AddTransient<SellProductUseCase>();
 builder.Services.AddTransient<EditProductUseCase>();
 builder.Services.AddTransient<ViewProductsUseCase>();
 builder.Services.AddTransient<DeleteProductUseCase>();
@@ -29,7 +29,7 @@ builder.Services.AddTransient<GetProductByIdUseCase>();
 builder.Services.AddTransient<ViewProductsByCategoryId>();
 
 builder.Services.AddTransient<GetTransactionsUseCase>();
-//builder.Services.AddTransient<RecordTransactionUseCase>();
+builder.Services.AddTransient<RecordTransactionUseCase>();
 builder.Services.AddTransient<GetTodayTransactionsUseCase>();
 
 WebApplication app = builder.Build();
@@ -41,7 +41,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 app.UseRouting();

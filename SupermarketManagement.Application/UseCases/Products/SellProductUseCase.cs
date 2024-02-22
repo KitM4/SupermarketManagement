@@ -6,13 +6,13 @@ namespace SupermarketManagement.Application.UseCases.Products;
 
 public class SellProductUseCase
 {
-    public SellProductUseCase(IRepository<Product> repository, RecordTransactionUseCase recordTransaction)
+    public SellProductUseCase(IProductRepository repository, RecordTransactionUseCase recordTransaction)
     {
         _repository = repository;
         _recordTransaction = recordTransaction;
     }
 
-    private readonly IRepository<Product> _repository;
+    private readonly IProductRepository _repository;
     private readonly RecordTransactionUseCase _recordTransaction;
 
     public void Execute(string cashierName, Guid productId, int quantityToSell)
